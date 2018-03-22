@@ -1013,6 +1013,45 @@ module HelpScout
       end
     end
 
+    # Update Customer
+    # https://developer.helpscout.com/help-desk-api/customers/update/
+    #
+    # Update the Customer.
+    #
+    # Request
+    #  REST Method: PUT
+    #  URL: https://api.helpscout.net/v1/customers/{id}.json
+    #
+    #  POST Parameters
+    #  Name      Type      Required  Notes
+    #  customer  Customer  Yes       The body of the request
+    #  reload    boolean   No        Set to true to return the customer in the
+    #                                response.
+    # Response
+    #  Response   Name      Type    Notes
+    #  Header     Status    Integer 201
+    #  Header     Location  String  https://api.helpscout.net/v1/customer/{id}.json
+
+    def update_customer(customer)
+      if !customer
+        raise StandardError.new("Missing Customer")
+      end
+
+      url = "/customers/#{customer.id}.json"
+
+      begin
+        # We need to set reload flag to true to receive created object back
+        param = {}
+        param[:reload] = true
+        param[:customer] = customer
+        item = Client.update_item(@auth, url, param.to_json)
+        Customer.new(item)
+      rescue StandardError => e
+        puts "Could not update customer: #{e.message}"
+        false
+      end
+    end
+
     def ratings(start_time, end_time, rating)
       url = "/reports/happiness/ratings.json"
 
